@@ -13,4 +13,7 @@ interface RoomPlayListsQuerys {
 
     @Query("SELECT * FROM room_play_lists")
     fun getPlayLists(): LiveData<List<RoomPlayLists>>
+
+    @Insert
+    fun addPlayList(roomPlayLists: RoomPlayLists)
 }

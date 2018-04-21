@@ -1,5 +1,6 @@
 package com.example.alex.mytube
 
+import android.arch.lifecycle.Observer
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.design.widget.NavigationView
@@ -10,9 +11,11 @@ import android.view.Menu
 import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import android.arch.lifecycle.ViewModelProviders
+
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
-
+    private var mPlayListViewModel: PlayListViewModel? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -30,7 +33,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         nav_view.setNavigationItemSelectedListener(this)
 
-        Repository(application).getPlayLists()
+
+        mPlayListViewModel = ViewModelProviders.of(this).get(PlayListViewModel::class.java)
+        mPlayListViewModel!!.getPlayLists().observe(this, Observer<List<RoomPlayLists>> { t ->
+            //Update list of play list
+            if (t != null) {
+                for (e in t) {
+                    //Create or update list of menu with playlist names
+                }
+            }
+        })
+
     }
 
     override fun onBackPressed() {
@@ -39,7 +52,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         } else {
             super.onBackPressed()
         }
-
 
 
     }
@@ -54,9 +66,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        when (item.itemId) {
-            R.id.action_settings -> return true
-            else -> return super.onOptionsItemSelected(item)
+        return when (item.itemId) {
+            R.id.action_settings -> true
+            else -> super.onOptionsItemSelected(item)
         }
     }
 

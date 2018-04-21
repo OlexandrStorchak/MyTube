@@ -5,9 +5,9 @@ import android.arch.persistence.room.Room
 import android.arch.persistence.room.RoomDatabase
 import android.content.Context
 
-@Database(entities = arrayOf(RoomPlayLists::class, RoomPlayListItems::class), version = 1)
+@Database(entities = [(RoomPlayLists::class), (RoomPlayListItems::class)], version = 1)
 abstract class MyRoomDB : RoomDatabase() {
-    abstract fun RoomPlayListsQuerys(): RoomPlayListsQuerys
+    abstract fun roomPlayListsQuerys(): RoomPlayListsQuerys
 
     companion object {
         private var INSTANCE: MyRoomDB? = null

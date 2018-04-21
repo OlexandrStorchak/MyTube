@@ -1,29 +1,49 @@
 package com.example.alex.mytube
 
 import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.LinearLayoutManager
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
-import android.arch.lifecycle.ViewModelProviders
+import kotlinx.android.synthetic.main.content_main.*
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     private var mPlayListViewModel: PlayListViewModel? = null
+    private var videos: List<RoomPlayLists>? = ArrayList()
+    private lateinit var rvVideoAdapter: RVVideoAdapter
+
+    //Menu var for runtime adding items
+    private lateinit var mNaviView: NavigationView
+    private lateinit var mPlayLists: Menu
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
+        //Init NavDrawers and menu
+        mNaviView = findViewById(R.id.nav_view)
+        mPlayLists = mNaviView.menu
+
+        //RecyclerView for display videos
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        rvVideoAdapter = RVVideoAdapter(videos, this)
+        recyclerView.adapter = rvVideoAdapter
+
+            //TEMP
+        fab.setOnClickListener {
+
+            mPlayListViewModel!!.addPlayList()
         }
 
         val toggle = ActionBarDrawerToggle(
@@ -37,9 +57,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         mPlayListViewModel = ViewModelProviders.of(this).get(PlayListViewModel::class.java)
         mPlayListViewModel!!.getPlayLists().observe(this, Observer<List<RoomPlayLists>> { t ->
             //Update list of play list
+            mPlayLists.clear()
             if (t != null) {
                 for (e in t) {
                     //Create or update list of menu with playlist names
+                    //Toast.makeText(applicationContext,e.name,Toast.LENGTH_SHORT).show()
+                    Log.d("log", e.name + " " + e.id)
+                    rvVideoAdapter.setVideo(t)
+                    rvVideoAdapter.notifyDataSetChanged()
+
+                    mPlayLists.add(e.name)
+
                 }
             }
         })
@@ -74,26 +102,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
-        when (item.itemId) {
-            R.id.nav_camera -> {
-                // Handle the camera action
-            }
-            R.id.nav_gallery -> {
 
-            }
-            R.id.nav_slideshow -> {
-
-            }
-            R.id.nav_manage -> {
-
-            }
-            R.id.nav_share -> {
-
-            }
-            R.id.nav_send -> {
-
-            }
-        }
+        Toast.makeText(this,item.title,Toast.LENGTH_SHORT).show()
 
         drawer_layout.closeDrawer(GravityCompat.START)
         return true

@@ -8,7 +8,6 @@ import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -40,7 +39,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         rvVideoAdapter = RVVideoAdapter(videos, this)
         recyclerView.adapter = rvVideoAdapter
 
-            //TEMP
+        //TEMP
         fab.setOnClickListener {
 
             mPlayListViewModel!!.addPlayList()
@@ -62,11 +61,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 for (e in t) {
                     //Create or update list of menu with playlist names
                     //Toast.makeText(applicationContext,e.name,Toast.LENGTH_SHORT).show()
-                    Log.d("log", e.name + " " + e.id)
-                    rvVideoAdapter.setVideo(t)
-                    rvVideoAdapter.notifyDataSetChanged()
 
-                    mPlayLists.add(e.name)
+
+                    mPlayLists.add(e.playListTitle)
 
                 }
             }
@@ -103,7 +100,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
 
-        Toast.makeText(this,item.title,Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, item.title, Toast.LENGTH_SHORT).show()
 
         drawer_layout.closeDrawer(GravityCompat.START)
         return true

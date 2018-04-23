@@ -1,10 +1,7 @@
 package com.example.alex.mytube
 
 import android.arch.lifecycle.LiveData
-import android.arch.persistence.room.Dao
-import android.arch.persistence.room.Insert
-import android.arch.persistence.room.OnConflictStrategy
-import android.arch.persistence.room.Query
+import android.arch.persistence.room.*
 
 @Dao
 interface RoomPlayListsQuerys {
@@ -16,4 +13,7 @@ interface RoomPlayListsQuerys {
 
     @Insert
     fun addPlayList(roomPlayLists: RoomPlayLists)
+
+    @Query("SELECT play_list_name FROM room_play_lists WHERE play_list_name = :s")
+    fun checkPlayListItem(s: String): String
 }

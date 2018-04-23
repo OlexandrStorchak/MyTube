@@ -10,7 +10,6 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.content_main.*
@@ -18,7 +17,7 @@ import kotlinx.android.synthetic.main.content_main.*
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     private var mPlayListViewModel: PlayListViewModel? = null
-    private var videos: List<RoomPlayLists>? = ArrayList()
+    private var videos: List<RoomVideoTable>? = ArrayList()
     private lateinit var rvVideoAdapter: RVVideoAdapter
 
     //Menu var for runtime adding items
@@ -32,18 +31,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         //Init NavDrawers and menu
         mNaviView = findViewById(R.id.nav_view)
+        mNaviView.setNavigationItemSelectedListener(this)
         mPlayLists = mNaviView.menu
+        mPlayLists.clear()
+        mPlayLists.add(1, 1, 1, "Play list 1")
+        mPlayLists.add(1, 2, 1, "Play List 2")
+        mPlayLists.add(1, 3, 1, "Play List 3")
+
 
         //RecyclerView for display videos
         recyclerView.layoutManager = LinearLayoutManager(this)
         rvVideoAdapter = RVVideoAdapter(videos, this)
         recyclerView.adapter = rvVideoAdapter
 
-        //TEMP
-        fab.setOnClickListener {
-
-            mPlayListViewModel!!.addPlayList()
-        }
 
         val toggle = ActionBarDrawerToggle(
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
@@ -54,20 +54,22 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 
         mPlayListViewModel = ViewModelProviders.of(this).get(PlayListViewModel::class.java)
-        mPlayListViewModel!!.getPlayLists().observe(this, Observer<List<RoomPlayLists>> { t ->
-            //Update list of play list
-            mPlayLists.clear()
+        mPlayListViewModel!!.getVideos().observe(this, Observer<List<RoomVideoTable>> { t ->
+
             if (t != null) {
                 for (e in t) {
-                    //Create or update list of menu with playlist names
-                    //Toast.makeText(applicationContext,e.name,Toast.LENGTH_SHORT).show()
 
-
-                    mPlayLists.add(e.playListTitle)
+                    rvVideoAdapter.setVideo(null)
+                    rvVideoAdapter.setVideo(t)
+                    rvVideoAdapter.notifyDataSetChanged()
 
                 }
             }
         })
+
+
+        mPlayListViewModel!!.getPlayLists()
+
 
     }
 
@@ -100,9 +102,28 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
 
-        Toast.makeText(this, item.title, Toast.LENGTH_SHORT).show()
+        when (item.itemId) {
+            1 -> showVideoByPlayList("PLkKunJj_bZefHRpkU-MF5YMfIOwZRRlg8")
+            2 -> showVideoByPlayList("PLkKunJj_bZefpZJio9Gh25b5hs0oBCXH_")
+            3 -> showVideoByPlayList("PLkKunJj_bZefB1_hhS68092rbF4HFtKjW")
+        }
+
+
 
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    private fun showVideoByPlayList(playListId: String) {
+        mPlayListViewModel!!.showVideoByPlayList(playListId).observe(this, Observer<List<RoomVideoTable>> { t ->
+            if (t != null) {
+                for (e in t) {
+
+                    rvVideoAdapter.setVideo(t)
+                    rvVideoAdapter.notifyDataSetChanged()
+
+                }
+            }
+        })
     }
 }

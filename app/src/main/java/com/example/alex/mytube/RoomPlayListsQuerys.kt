@@ -6,14 +6,15 @@ import android.arch.persistence.room.*
 @Dao
 interface RoomPlayListsQuerys {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(playList: RoomPlayLists)
+    fun insert(videoTable: RoomVideoTable)
 
-    @Query("SELECT * FROM room_play_lists")
-    fun getPlayLists(): LiveData<List<RoomPlayLists>>
+    @Query("SELECT * FROM video")
+    fun getAllVideos(): LiveData<List<RoomVideoTable>>
 
-    @Insert
-    fun addPlayList(roomPlayLists: RoomPlayLists)
+    @Query("SELECT * FROM video WHERE play_list_name = :playListId")
+    fun getVideosByPlayList(playListId : String): LiveData<List<RoomVideoTable>>
 
-    @Query("SELECT play_list_name FROM room_play_lists WHERE play_list_name = :s")
-    fun checkPlayListItem(s: String): String
+
+    @Query("SELECT video_id FROM video WHERE video_id = :s")
+    fun checkVideoItem(s: String): String
 }

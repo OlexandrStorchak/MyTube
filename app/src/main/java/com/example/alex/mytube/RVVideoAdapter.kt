@@ -1,6 +1,8 @@
 package com.example.alex.mytube
 
 import android.content.Context
+import android.content.Intent
+import android.support.v4.content.ContextCompat.startActivity
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -27,6 +29,15 @@ class RVVideoAdapter(private var mVideo: List<RoomVideoTable>?,
 
         Picasso.get().load(mVideo?.get(position)?.videoImgUrl).into(holder.imageVideo)
 
+        holder.imageVideo.setOnClickListener(object : View.OnClickListener{
+            override fun onClick(v: View?) {
+                v?.context?.startActivity(Intent(v.context,PlayerActivity::class.java)
+                        .putExtra("videoId",mVideo?.get(position)?.videoId))
+
+                      }
+
+        })
+
     }
 
     fun setVideo(t: List<RoomVideoTable>?) {
@@ -38,4 +49,6 @@ class MyVH(view: View) : RecyclerView.ViewHolder(view) {
     val imageVideo = view.imageVideoItem!!
     val titleVideo = view.titleVideoItem!!
     val descVideo = view.decsVideoItem!!
+
+
 }

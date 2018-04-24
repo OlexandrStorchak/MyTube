@@ -1,7 +1,6 @@
 package com.example.alex.mytube
 
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
+import android.arch.lifecycle.*
 import android.content.Context
 import android.net.ConnectivityManager
 import android.os.Bundle
@@ -17,7 +16,7 @@ import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.content_main.*
 
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, LifecycleOwner {
     private var mPlayListViewModel: PlayListViewModel? = null
     private var videos: List<RoomVideoTable> = ArrayList()
     private lateinit var rvVideoAdapter: RVVideoAdapter
@@ -46,6 +45,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         rvVideoAdapter = RVVideoAdapter(videos, this)
         recyclerView.adapter = rvVideoAdapter
 
+
         val toggle = ActionBarDrawerToggle(
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawer_layout.addDrawerListener(toggle)
@@ -56,27 +56,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         mPlayListViewModel = ViewModelProviders.of(this).get(PlayListViewModel::class.java)
         mPlayListViewModel!!.getVideos().observe(this,
-                Observer<List<RoomVideoTable>> { t ->
-
-
-                    if (t != null) {
-                        for (e in t) {
-
-                            rvVideoAdapter.setVideo(null)
-                            rvVideoAdapter.setVideo(t)
-                            rvVideoAdapter.notifyDataSetChanged()
-
-                        }
-                    }
+                Observer<List<RoomVideoTable>> { vid ->
+                    rvVideoAdapter.setVideo(vid)
+                    rvVideoAdapter.notifyDataSetChanged()
 
                 })
-
-
-
-
-
-        mPlayListViewModel!!.getPlayLists()
-
 
     }
 
@@ -127,7 +111,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
                     if (t != null) {
                         for (e in t) {
-
+                            videos = t!!
                             rvVideoAdapter.setVideo(t)
                             rvVideoAdapter.notifyDataSetChanged()
 

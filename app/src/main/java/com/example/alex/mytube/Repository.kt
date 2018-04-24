@@ -2,6 +2,7 @@ package com.example.alex.mytube
 
 import android.app.Application
 import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.MutableLiveData
 import android.util.Log
 import com.google.gson.GsonBuilder
 import okhttp3.*
@@ -11,9 +12,24 @@ const val API_KEY = "AIzaSyBXosAYMJj3ihDjYCoxQvIfyFp1YttfhEk"
 
 class Repository(val app: Application, val myRoom: MyRoomDB) {
 
+    private var mVideoHttp: LiveData<List<RoomVideoTable>> = MutableLiveData()
+
+
+    private var mListMutableVideo: MutableLiveData<List<RoomVideoTable>> = MutableLiveData()
+
+
     fun getAllVideos(): LiveData<List<RoomVideoTable>> {
 
         return myRoom.roomPlayListsQuerys().getAllVideos()
+    }
+
+    fun getVideoHttph(playListId: String?): LiveData<List<RoomVideoTable>> {
+        getHttpVideos(playListId)
+        return mListMutableVideo
+    }
+
+    fun getMutableVideoList(): MutableLiveData<List<RoomVideoTable>> {
+        return mListMutableVideo
     }
 
 
@@ -21,7 +37,8 @@ class Repository(val app: Application, val myRoom: MyRoomDB) {
         return myRoom.roomPlayListsQuerys().getVideosByPlayList(playList)
     }
 
-    fun getHttpVideos(playListId: String) {
+    fun getHttpVideos(playListId: String?) {
+
         val id: String
         if (playListId == null) {
             id = "PLkKunJj_bZefHRpkU-MF5YMfIOwZRRlg8"
@@ -42,12 +59,23 @@ class Repository(val app: Application, val myRoom: MyRoomDB) {
             }
 
             override fun onResponse(call: Call?, response: Response?) {
+                val listVideos: MutableList<RoomVideoTable> = ArrayList()
                 val mBody = response?.body()?.string()
                 val mGson = GsonBuilder().create()
                 val videoData = mGson.fromJson(mBody, VideoData::class.java)
                 for (item in videoData.items) {
 
-                    if (myRoom.roomPlayListsQuerys()
+                    listVideos.add(element = RoomVideoTable(null,
+                            item.snippet.playlistId, null,
+                            item.snippet.title,
+                            item.snippet.resourceId.videoId,
+                            item.snippet.description,
+                            item.snippet.thumbnails.medium.url
+                            , null))
+
+                    addItem(listVideos)
+
+                    /*if (myRoom.roomPlayListsQuerys()
                                     .checkVideoItem(item.snippet.resourceId.videoId)
                             != item.snippet.resourceId.videoId) {
                         myRoom.roomPlayListsQuerys().insert(RoomVideoTable(null,
@@ -58,7 +86,7 @@ class Repository(val app: Application, val myRoom: MyRoomDB) {
                                 item.snippet.thumbnails.medium.url
                                 , null))
 
-                    }
+                    }*/
 
                 }
             }
@@ -66,6 +94,10 @@ class Repository(val app: Application, val myRoom: MyRoomDB) {
         })
 
 
+    }
+
+    fun addItem(element: List<RoomVideoTable>) {
+        mListMutableVideo.postValue(element)
     }
 
 

@@ -1,6 +1,5 @@
 package com.example.alex.mytube
 
-import android.arch.lifecycle.LifecycleOwner
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
@@ -11,6 +10,7 @@ import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_main.*
@@ -18,7 +18,7 @@ import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.content_main.*
 
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, LifecycleOwner {
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     private var mPlayListViewModel: PlayListViewModel? = null
     private var videos: List<RoomVideoTable> = ArrayList()
     private lateinit var mRVAdapter: RVVideoAdapter
@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         mNaviView.setNavigationItemSelectedListener(this)
         mPlayLists = mNaviView.menu
         mPlayLists.clear()
-        mPlayLists.add(1, 1, 1, "Play list 1")
+        mPlayLists.add(1, 1, 1, "Play List 1")
         mPlayLists.add(1, 2, 1, "Play List 2")
         mPlayLists.add(1, 3, 1, "Play List 3")
 
@@ -82,15 +82,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        return when (item.itemId) {
-            R.id.action_settings -> true
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
@@ -108,16 +99,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun showVideoByPlayList(playListId: String) {
+        Log.d("log", isOnline().toString())
         mPlayListViewModel!!.showVideoByPlayList(playListId).observe(this,
                 Observer<List<RoomVideoTable>> { t ->
 
                     if (t != null) {
-                        for (e in t) {
-                            videos = t!!
-                            mRVAdapter.setVideo(t)
-                            mRVAdapter.notifyDataSetChanged()
 
-                        }
+                        videos = t
+                        mRVAdapter.setVideo(t)
+                        mRVAdapter.notifyDataSetChanged()
+
+
                     }
                 })
     }

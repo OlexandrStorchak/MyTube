@@ -57,13 +57,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 
         mPlayListViewModel = ViewModelProviders.of(this).get(PlayListViewModel::class.java)
-        mPlayListViewModel!!.getVideos().observe(this,
-                Observer<List<RoomVideoTable>> { vid ->
-                    mRVAdapter.setVideo(vid)
-                    mRVAdapter.notifyDataSetChanged()
+        if (isOnline()) {
+            mPlayListViewModel!!.getVideosFromNetwork().observe(this,
+                    Observer<List<RoomVideoTable>> { vid ->
+                        mRVAdapter.setVideo(vid)
+                        mRVAdapter.notifyDataSetChanged()
 
-                })
+                    })
+        } else {
+            mPlayListViewModel!!.getVideosFromRoom().observe(this,
+                    Observer<List<RoomVideoTable>> { vid ->
+                        mRVAdapter.setVideo(vid)
+                        mRVAdapter.notifyDataSetChanged()
 
+                    })
+        }
     }
 
     override fun onBackPressed() {
@@ -100,18 +108,25 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun showVideoByPlayList(playListId: String) {
         Log.d("log", isOnline().toString())
-        mPlayListViewModel!!.showVideoByPlayList(playListId).observe(this,
-                Observer<List<RoomVideoTable>> { t ->
-
-                    if (t != null) {
-
-                        videos = t
-                        mRVAdapter.setVideo(t)
-                        mRVAdapter.notifyDataSetChanged()
-
-
-                    }
-                })
+        if (isOnline()) {
+            mPlayListViewModel!!.showVideoByPlayListNetwork(playListId).observe(this,
+                    Observer<List<RoomVideoTable>> { t ->
+                        if (t != null) {
+                            videos = t
+                            mRVAdapter.setVideo(t)
+                            mRVAdapter.notifyDataSetChanged()
+                        }
+                    })
+        } else {
+            mPlayListViewModel!!.showVideoByPlayListRoom(playListId).observe(this,
+                    Observer<List<RoomVideoTable>> { t ->
+                        if (t != null) {
+                            videos = t
+                            mRVAdapter.setVideo(t)
+                            mRVAdapter.notifyDataSetChanged()
+                        }
+                    })
+        }
     }
 
     fun isOnline(): Boolean {

@@ -29,14 +29,10 @@ class RVVideoAdapter(private var mVideo: List<RoomVideoTable>?,
 
         Picasso.get().load(mVideo?.get(position)?.videoImgUrl).into(holder.imageVideo)
 
-        holder.imageVideo.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(v: View?) {
-                v?.context?.startActivity(Intent(v.context, PlayerActivity::class.java)
-                        .putExtra("videoId", mVideo?.get(position)?.videoId))
-
-            }
-
-        })
+        holder.imageVideo.setOnClickListener { v ->
+            v?.context?.startActivity(Intent(v.context, PlayerActivity::class.java)
+                    .putExtra("videoId", mVideo?.get(position)?.videoId))
+        }
 
     }
 

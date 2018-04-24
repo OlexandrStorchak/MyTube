@@ -12,11 +12,9 @@ const val API_KEY = "AIzaSyBXosAYMJj3ihDjYCoxQvIfyFp1YttfhEk"
 
 class Repository(val app: Application, val myRoom: MyRoomDB) {
 
-    private var mVideoHttp: LiveData<List<RoomVideoTable>> = MutableLiveData()
-
-
     private var mListMutableVideo: MutableLiveData<List<RoomVideoTable>> = MutableLiveData()
 
+    private lateinit var mListFromRoom: LiveData<List<RoomVideoTable>>
 
     fun getAllVideos(): LiveData<List<RoomVideoTable>> {
 
@@ -28,13 +26,10 @@ class Repository(val app: Application, val myRoom: MyRoomDB) {
         return mListMutableVideo
     }
 
-    fun getMutableVideoList(): MutableLiveData<List<RoomVideoTable>> {
-        return mListMutableVideo
-    }
 
-
-    fun getVideosByPlayList(playList: String): LiveData<List<RoomVideoTable>> {
-        return myRoom.roomPlayListsQuerys().getVideosByPlayList(playList)
+    fun getVideosByPlayListRoom(playList: String): LiveData<List<RoomVideoTable>> {
+        mListFromRoom = myRoom.roomPlayListsQuerys().getVideosByPlayList(playList)
+        return mListFromRoom
     }
 
     fun getHttpVideos(playListId: String?) {
@@ -55,7 +50,8 @@ class Repository(val app: Application, val myRoom: MyRoomDB) {
         val mHttpClient = OkHttpClient()
         mHttpClient.newCall(mRequest).enqueue(object : Callback {
             override fun onFailure(call: Call?, e: IOException?) {
-                Log.d("log", e.toString())
+                Log.d("log", "OFLINE FETCH VIDEO")
+
             }
 
             override fun onResponse(call: Call?, response: Response?) {

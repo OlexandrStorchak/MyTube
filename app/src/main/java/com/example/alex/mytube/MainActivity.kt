@@ -13,6 +13,8 @@ import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.content_main.*
@@ -42,6 +44,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         mPlayLists.add(1, 2, 1, "Play List 2")
         mPlayLists.add(1, 3, 1, "Play List 3")
 
+        val progressBar = progressBar
+        progressBar.visibility = VISIBLE
+
         //RecyclerView for display videos
         recyclerView.layoutManager = LinearLayoutManager(this)
         mRVAdapter = RVVideoAdapter(videos, this)
@@ -60,6 +65,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if (isOnline()) {
             mPlayListViewModel!!.getVideosFromNetwork().observe(this,
                     Observer<List<RoomVideoTable>> { vid ->
+                        progressBar.visibility = GONE
                         mRVAdapter.setVideo(vid)
                         mRVAdapter.notifyDataSetChanged()
 
@@ -67,6 +73,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         } else {
             mPlayListViewModel!!.getVideosFromRoom().observe(this,
                     Observer<List<RoomVideoTable>> { vid ->
+                        progressBar.visibility = GONE
                         mRVAdapter.setVideo(vid)
                         mRVAdapter.notifyDataSetChanged()
 
@@ -112,6 +119,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             mPlayListViewModel!!.showVideoByPlayListNetwork(playListId).observe(this,
                     Observer<List<RoomVideoTable>> { t ->
                         if (t != null) {
+                            progressBar.visibility = GONE
                             videos = t
                             mRVAdapter.setVideo(t)
                             mRVAdapter.notifyDataSetChanged()
@@ -121,6 +129,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             mPlayListViewModel!!.showVideoByPlayListRoom(playListId).observe(this,
                     Observer<List<RoomVideoTable>> { t ->
                         if (t != null) {
+                            progressBar.visibility = GONE
                             videos = t
                             mRVAdapter.setVideo(t)
                             mRVAdapter.notifyDataSetChanged()

@@ -1,5 +1,6 @@
 package com.example.alex.mytube
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.support.v7.widget.RecyclerView
@@ -21,7 +22,7 @@ class RVVideoAdapter(private var mVideo: List<RoomVideoTable>?,
         return mVideo?.size!!
     }
 
-    override fun onBindViewHolder(holder: MyVH, position: Int) {
+    override fun onBindViewHolder(holder: MyVH, @SuppressLint("RecyclerView") position: Int) {
 
         holder.titleVideo.text = mVideo?.get(position)?.videoTitle
         holder.descVideo.text = mVideo?.get(position)?.videoDescription

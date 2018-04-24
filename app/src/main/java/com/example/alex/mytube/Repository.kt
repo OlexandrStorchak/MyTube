@@ -7,10 +7,9 @@ import com.google.gson.GsonBuilder
 import okhttp3.*
 import java.io.IOException
 
+const val API_KEY = "AIzaSyBXosAYMJj3ihDjYCoxQvIfyFp1YttfhEk"
+
 class Repository(val app: Application, val myRoom: MyRoomDB) {
-    companion object {
-        val API_KEY = "AIzaSyBXosAYMJj3ihDjYCoxQvIfyFp1YttfhEk"
-    }
 
     fun getAllVideos(): LiveData<List<RoomVideoTable>> {
 
@@ -23,8 +22,8 @@ class Repository(val app: Application, val myRoom: MyRoomDB) {
     }
 
     fun getHttpVideos(playListId: String) {
-            val id : String
-        if (playListId==null){
+        val id: String
+        if (playListId == null) {
             id = "PLkKunJj_bZefHRpkU-MF5YMfIOwZRRlg8"
         } else {
             id = playListId
@@ -68,7 +67,6 @@ class Repository(val app: Application, val myRoom: MyRoomDB) {
 
 
     }
-
 
 
 }

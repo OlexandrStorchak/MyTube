@@ -1,13 +1,11 @@
 package com.example.alex.mytube
 
 import android.app.Application
-import android.arch.lifecycle.*
-import android.support.v7.widget.RecyclerView
-import android.text.BoringLayout
-import android.util.Log
+import android.arch.lifecycle.AndroidViewModel
+import android.arch.lifecycle.LiveData
 
 
-class PlayListViewModel(application: Application) : AndroidViewModel(application), LifecycleObserver {
+class PlayListViewModel(application: Application) : AndroidViewModel(application) {
 
     private val mRepository: Repository = Repository(application, MyRoomDB.getInstance(application)!!)
 
@@ -22,9 +20,6 @@ class PlayListViewModel(application: Application) : AndroidViewModel(application
 
 
     fun getVideos(): LiveData<List<RoomVideoTable>> {
-
-
-
         return mVideos
     }
 

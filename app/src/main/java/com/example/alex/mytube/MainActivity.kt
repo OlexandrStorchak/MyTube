@@ -21,7 +21,7 @@ import kotlinx.android.synthetic.main.content_main.*
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, LifecycleOwner {
     private var mPlayListViewModel: PlayListViewModel? = null
     private var videos: List<RoomVideoTable> = ArrayList()
-    private lateinit var rvVideoAdapter: RVVideoAdapter
+    private lateinit var mRVAdapter: RVVideoAdapter
 
     //Menu var for runtime adding items
     private lateinit var mNaviView: NavigationView
@@ -44,8 +44,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         //RecyclerView for display videos
         recyclerView.layoutManager = LinearLayoutManager(this)
-        rvVideoAdapter = RVVideoAdapter(videos, this)
-        recyclerView.adapter = rvVideoAdapter
+        mRVAdapter = RVVideoAdapter(videos, this)
+        recyclerView.adapter = mRVAdapter
 
 
         val toggle = ActionBarDrawerToggle(
@@ -59,8 +59,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         mPlayListViewModel = ViewModelProviders.of(this).get(PlayListViewModel::class.java)
         mPlayListViewModel!!.getVideos().observe(this,
                 Observer<List<RoomVideoTable>> { vid ->
-                    rvVideoAdapter.setVideo(vid)
-                    rvVideoAdapter.notifyDataSetChanged()
+                    mRVAdapter.setVideo(vid)
+                    mRVAdapter.notifyDataSetChanged()
 
                 })
 
@@ -114,8 +114,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     if (t != null) {
                         for (e in t) {
                             videos = t!!
-                            rvVideoAdapter.setVideo(t)
-                            rvVideoAdapter.notifyDataSetChanged()
+                            mRVAdapter.setVideo(t)
+                            mRVAdapter.notifyDataSetChanged()
 
                         }
                     }

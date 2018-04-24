@@ -18,8 +18,7 @@ class Repository(val app: Application, val myRoom: MyRoomDB) {
     }
 
 
-
-    fun getVideosByPlayList(playList : String): LiveData<List<RoomVideoTable>>{
+    fun getVideosByPlayList(playList: String): LiveData<List<RoomVideoTable>> {
         return myRoom.roomPlayListsQuerys().getVideosByPlayList(playList)
     }
 

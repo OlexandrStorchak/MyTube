@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.content_main.*
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     private var mPlayListViewModel: PlayListViewModel? = null
-    private var videos: List<RoomVideoTable>? = ArrayList()
+    private var videos: List<RoomVideoTable> = ArrayList()
     private lateinit var rvVideoAdapter: RVVideoAdapter
 
     //Menu var for runtime adding items
@@ -38,12 +38,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         mPlayLists.add(1, 2, 1, "Play List 2")
         mPlayLists.add(1, 3, 1, "Play List 3")
 
-
         //RecyclerView for display videos
         recyclerView.layoutManager = LinearLayoutManager(this)
         rvVideoAdapter = RVVideoAdapter(videos, this)
         recyclerView.adapter = rvVideoAdapter
-
 
         val toggle = ActionBarDrawerToggle(
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
@@ -54,18 +52,24 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 
         mPlayListViewModel = ViewModelProviders.of(this).get(PlayListViewModel::class.java)
-        mPlayListViewModel!!.getVideos().observe(this, Observer<List<RoomVideoTable>> { t ->
+        mPlayListViewModel!!.getVideos().observe(this,
+                Observer<List<RoomVideoTable>> { t ->
 
-            if (t != null) {
-                for (e in t) {
 
-                    rvVideoAdapter.setVideo(null)
-                    rvVideoAdapter.setVideo(t)
-                    rvVideoAdapter.notifyDataSetChanged()
+                    if (t != null) {
+                        for (e in t) {
 
-                }
-            }
-        })
+                            rvVideoAdapter.setVideo(null)
+                            rvVideoAdapter.setVideo(t)
+                            rvVideoAdapter.notifyDataSetChanged()
+
+                        }
+                    }
+
+                })
+
+
+
 
 
         mPlayListViewModel!!.getPlayLists()
@@ -115,15 +119,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun showVideoByPlayList(playListId: String) {
-        mPlayListViewModel!!.showVideoByPlayList(playListId).observe(this, Observer<List<RoomVideoTable>> { t ->
-            if (t != null) {
-                for (e in t) {
+        mPlayListViewModel!!.showVideoByPlayList(playListId).observe(this,
+                Observer<List<RoomVideoTable>> { t ->
 
-                    rvVideoAdapter.setVideo(t)
-                    rvVideoAdapter.notifyDataSetChanged()
+                    if (t != null) {
+                        for (e in t) {
 
-                }
-            }
-        })
+                            rvVideoAdapter.setVideo(t)
+                            rvVideoAdapter.notifyDataSetChanged()
+
+                        }
+                    }
+                })
     }
 }

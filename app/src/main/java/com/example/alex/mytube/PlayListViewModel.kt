@@ -10,7 +10,7 @@ class PlayListViewModel(application: Application) : AndroidViewModel(application
 
     private val mRepository: Repository = Repository(application, MyRoomDB.getInstance(application)!!)
 
-    private var mVideos: MutableLiveData<LiveData<RoomVideoTable>>
+    private var mVideos: LiveData<List<RoomVideoTable>>
 
 
     init {
@@ -19,7 +19,7 @@ class PlayListViewModel(application: Application) : AndroidViewModel(application
 
     }
 
-    fun getVideos(): MutableLiveData<LiveData<RoomVideoTable>> {
+    fun getVideos(): LiveData<List<RoomVideoTable>> {
         mVideos = mRepository.getAllVideos()
 
         mRepository.getHttpVideos()
@@ -32,9 +32,8 @@ class PlayListViewModel(application: Application) : AndroidViewModel(application
         mRepository.getPlayLists()
     }
 
-    /*fun showVideoByPlayList(playListId: String): LiveData<kotlin.collections.List<RoomVideoTable>> {
+    fun showVideoByPlayList(playListId: String): LiveData<kotlin.collections.List<RoomVideoTable>> {
         mVideos = mRepository.getVideosByPlayList(playListId)
         return mVideos
     }
-*/
 }

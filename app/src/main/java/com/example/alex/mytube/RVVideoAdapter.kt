@@ -1,6 +1,5 @@
 package com.example.alex.mytube
 
-import android.arch.lifecycle.LiveData
 import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -30,7 +29,7 @@ class RVVideoAdapter(private var mVideo: List<RoomVideoTable>?,
 
     }
 
-    fun setVideo(t: LiveData<RoomVideoTable>?) {
+    fun setVideo(t: List<RoomVideoTable>?) {
         mVideo = t
     }
 }

@@ -42,7 +42,7 @@ class Repository(val app: Application, val myRoom: MyRoomDB) {
                 val mBody = response?.body()?.string()
                 val mGson = GsonBuilder().create()
                 val videoData = mGson.fromJson(mBody, VideoData::class.java)
-                for (item in videoData.items) {
+                /*for (item in videoData.items) {
 
                     if (myRoom.roomPlayListsQuerys()
                                     .checkVideoItem(item.snippet.resourceId.videoId)
@@ -57,7 +57,7 @@ class Repository(val app: Application, val myRoom: MyRoomDB) {
 
                     }
 
-                }
+                }*/
             }
 
         })

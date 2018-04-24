@@ -4,6 +4,8 @@ import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
+import android.content.Context
+import android.net.ConnectivityManager
 
 
 class PlayListViewModel(application: Application) : AndroidViewModel(application) {
@@ -36,4 +38,6 @@ class PlayListViewModel(application: Application) : AndroidViewModel(application
         mVideos = mRepository.getVideosByPlayList(playListId)
         return mVideos
     }
+
+
 }

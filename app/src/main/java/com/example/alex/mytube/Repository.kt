@@ -32,7 +32,7 @@ class Repository(val app: Application, val myRoom: MyRoomDB) {
         return mListFromRoom
     }
 
-    fun getHttpVideos(playListId: String?) {
+    private fun getHttpVideos(playListId: String?) {
 
         val id: String
         if (playListId == null) {
@@ -41,7 +41,7 @@ class Repository(val app: Application, val myRoom: MyRoomDB) {
             id = playListId
         }
 
-        val url = " https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=$id&fields=items(snippet(description%2CplaylistId%2CresourceId%2FvideoId%2Cthumbnails%2Fmedium%2Furl%2Ctitle))&key=$API_KEY"
+        val url = "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=$id&fields=items(snippet(description%2CplaylistId%2CresourceId%2FvideoId%2Cthumbnails%2Fhigh%2Furl%2Ctitle))&key=$API_KEY"
         val mRequest =
                 Request.Builder()
                         .url(url)
@@ -66,7 +66,7 @@ class Repository(val app: Application, val myRoom: MyRoomDB) {
                             item.snippet.title,
                             item.snippet.resourceId.videoId,
                             item.snippet.description,
-                            item.snippet.thumbnails.medium.url
+                            item.snippet.thumbnails.high.url
                             , null))
 
                     addItem(listVideos)

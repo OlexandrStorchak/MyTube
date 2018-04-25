@@ -3,9 +3,11 @@ package com.example.alex.mytube
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
+import android.content.Intent
 import android.net.ConnectivityManager
 import android.os.Bundle
 import android.support.design.widget.NavigationView
+import android.support.design.widget.Snackbar
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
@@ -20,7 +22,20 @@ import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.content_main.*
 
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class MainActivity : AppCompatActivity(),
+        NavigationView.OnNavigationItemSelectedListener,
+        MainActivityInterface {
+    override fun openVideoActivity(videoId: String) {
+        applicationContext.startActivity(Intent(applicationContext, PlayerActivity::class.java)
+                .putExtra("videoId",videoId))
+    }
+
+    override fun saveToRoom(roomVideoTable: RoomVideoTable) {
+        Thread(Runnable { mPlayListViewModel!!.addToRoom(roomVideoTable) }).start()
+
+
+    }
+
     private var mPlayListViewModel: PlayListViewModel? = null
     private var videos: List<RoomVideoTable> = ArrayList()
     private lateinit var mRVAdapter: RVVideoAdapter
@@ -28,6 +43,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     //Menu var for runtime adding items
     private lateinit var mNaviView: NavigationView
     private lateinit var mPlayLists: Menu
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,7 +65,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         //RecyclerView for display videos
         recyclerView.layoutManager = LinearLayoutManager(this)
-        mRVAdapter = RVVideoAdapter(videos, this)
+        mRVAdapter = RVVideoAdapter(videos, this, this)
         recyclerView.adapter = mRVAdapter
 
 
@@ -71,6 +87,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
                     })
         } else {
+            val snackbar = Snackbar
+                    .make(drawer_layout, "Offline now", Snackbar.LENGTH_INDEFINITE)
+                    .setAction("Connect") {
+                        startActivity(Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS))
+
+                    }
+
+            snackbar.show()
             mPlayListViewModel!!.getVideosFromRoom().observe(this,
                     Observer<List<RoomVideoTable>> { vid ->
                         progressBar.visibility = GONE

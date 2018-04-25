@@ -38,4 +38,12 @@ class PlayListViewModel(application: Application) : AndroidViewModel(application
         return mVideos
     }
 
+    fun addToRoom(roomVideoTable: RoomVideoTable) {
+        val videoId = roomVideoTable.videoId
+        if (mRepository.myRoom.roomPlayListsQuerys().checkVideoItem(videoId) != videoId) {
+            mRepository.myRoom.roomPlayListsQuerys().insert(roomVideoTable)
+        }
+    }
+
 }
+

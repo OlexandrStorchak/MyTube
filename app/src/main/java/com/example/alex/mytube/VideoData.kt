@@ -11,8 +11,8 @@ class SnippetVideo(val title: String,
                    val resourceId: RecourceId,
                    val playlistId : String)
 
-class VideoImg(val medium: MediumVideoImg)
+class VideoImg(val high: HighVideoImg)
 
-class MediumVideoImg(val url: String)
+class HighVideoImg(val url: String)
 
 class RecourceId(val videoId: String)

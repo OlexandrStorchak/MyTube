@@ -7,7 +7,7 @@ import android.content.Context
 
 @Database(entities = [(RoomVideoTable::class)], version = 1)
 abstract class MyRoomDB : RoomDatabase() {
-    abstract fun roomPlayListsQuerys(): RoomPlayListsQuerys
+    abstract fun roomPlayListsQuerys(): RoomPlayListsQueries
 
     companion object {
         private var INSTANCE: MyRoomDB? = null

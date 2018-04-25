@@ -1,24 +1,41 @@
 package com.example.alex.mytube
 
-import android.arch.lifecycle.LifecycleOwner
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
+import android.content.Intent
 import android.net.ConnectivityManager
 import android.os.Bundle
 import android.support.design.widget.NavigationView
+import android.support.design.widget.Snackbar
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.content_main.*
 
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, LifecycleOwner {
+class MainActivity : AppCompatActivity(),
+        NavigationView.OnNavigationItemSelectedListener,
+        MainActivityInterface {
+    override fun openVideoActivity(videoId: String) {
+        applicationContext.startActivity(Intent(applicationContext, PlayerActivity::class.java)
+                .putExtra("videoId",videoId))
+    }
+
+    override fun saveToRoom(roomVideoTable: RoomVideoTable) {
+        Thread(Runnable { mPlayListViewModel!!.addToRoom(roomVideoTable) }).start()
+
+
+    }
+
     private var mPlayListViewModel: PlayListViewModel? = null
     private var videos: List<RoomVideoTable> = ArrayList()
     private lateinit var mRVAdapter: RVVideoAdapter
@@ -26,6 +43,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     //Menu var for runtime adding items
     private lateinit var mNaviView: NavigationView
     private lateinit var mPlayLists: Menu
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,13 +56,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         mNaviView.setNavigationItemSelectedListener(this)
         mPlayLists = mNaviView.menu
         mPlayLists.clear()
-        mPlayLists.add(1, 1, 1, "Play list 1")
+        mPlayLists.add(1, 1, 1, "Play List 1")
         mPlayLists.add(1, 2, 1, "Play List 2")
         mPlayLists.add(1, 3, 1, "Play List 3")
 
+        val progressBar = progressBar
+        progressBar.visibility = VISIBLE
+
         //RecyclerView for display videos
         recyclerView.layoutManager = LinearLayoutManager(this)
-        mRVAdapter = RVVideoAdapter(videos, this)
+        mRVAdapter = RVVideoAdapter(videos, this, this)
         recyclerView.adapter = mRVAdapter
 
 
@@ -57,13 +78,31 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 
         mPlayListViewModel = ViewModelProviders.of(this).get(PlayListViewModel::class.java)
-        mPlayListViewModel!!.getVideos().observe(this,
-                Observer<List<RoomVideoTable>> { vid ->
-                    mRVAdapter.setVideo(vid)
-                    mRVAdapter.notifyDataSetChanged()
+        if (isOnline()) {
+            mPlayListViewModel!!.getVideosFromNetwork().observe(this,
+                    Observer<List<RoomVideoTable>> { vid ->
+                        progressBar.visibility = GONE
+                        mRVAdapter.setVideo(vid)
+                        mRVAdapter.notifyDataSetChanged()
 
-                })
+                    })
+        } else {
+            val snackbar = Snackbar
+                    .make(drawer_layout, "Offline now", Snackbar.LENGTH_INDEFINITE)
+                    .setAction("Connect") {
+                        startActivity(Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS))
 
+                    }
+
+            snackbar.show()
+            mPlayListViewModel!!.getVideosFromRoom().observe(this,
+                    Observer<List<RoomVideoTable>> { vid ->
+                        progressBar.visibility = GONE
+                        mRVAdapter.setVideo(vid)
+                        mRVAdapter.notifyDataSetChanged()
+
+                    })
+        }
     }
 
     override fun onBackPressed() {
@@ -82,15 +121,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        return when (item.itemId) {
-            R.id.action_settings -> true
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
@@ -108,18 +138,28 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun showVideoByPlayList(playListId: String) {
-        mPlayListViewModel!!.showVideoByPlayList(playListId).observe(this,
-                Observer<List<RoomVideoTable>> { t ->
-
-                    if (t != null) {
-                        for (e in t) {
-                            videos = t!!
+        Log.d("log", isOnline().toString())
+        if (isOnline()) {
+            mPlayListViewModel!!.showVideoByPlayListNetwork(playListId).observe(this,
+                    Observer<List<RoomVideoTable>> { t ->
+                        if (t != null) {
+                            progressBar.visibility = GONE
+                            videos = t
                             mRVAdapter.setVideo(t)
                             mRVAdapter.notifyDataSetChanged()
-
                         }
-                    }
-                })
+                    })
+        } else {
+            mPlayListViewModel!!.showVideoByPlayListRoom(playListId).observe(this,
+                    Observer<List<RoomVideoTable>> { t ->
+                        if (t != null) {
+                            progressBar.visibility = GONE
+                            videos = t
+                            mRVAdapter.setVideo(t)
+                            mRVAdapter.notifyDataSetChanged()
+                        }
+                    })
+        }
     }
 
     fun isOnline(): Boolean {

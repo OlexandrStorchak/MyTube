@@ -2,7 +2,6 @@ package com.example.alex.mytube
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -11,7 +10,8 @@ import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.play_list_videos_item.view.*
 
 class RVVideoAdapter(private var mVideo: List<RoomVideoTable>?,
-                     private val mContext: Context) : RecyclerView.Adapter<MyVH>() {
+                     private val mContext: Context,
+                     private var mainActivityInterface: MainActivityInterface) : RecyclerView.Adapter<MyVH>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyVH {
         return MyVH(LayoutInflater.from(mContext)
@@ -24,19 +24,22 @@ class RVVideoAdapter(private var mVideo: List<RoomVideoTable>?,
 
     override fun onBindViewHolder(holder: MyVH, @SuppressLint("RecyclerView") position: Int) {
 
-        holder.titleVideo.text = mVideo?.get(position)?.videoTitle
-        holder.descVideo.text = mVideo?.get(position)?.videoDescription
+        holder.titleVideo.text = mVideo!![position].videoTitle
+        holder.descVideo.text = mVideo!![position].videoDescription
 
-        Picasso.get().load(mVideo?.get(position)?.videoImgUrl).into(holder.imageVideo)
+        Picasso.get().load(mVideo!![position].videoImgUrl).into(holder.imageVideo)
 
-        holder.imageVideo.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(v: View?) {
-                v?.context?.startActivity(Intent(v.context, PlayerActivity::class.java)
-                        .putExtra("videoId", mVideo?.get(position)?.videoId))
-
-            }
-
-        })
+        holder.imageVideo.setOnClickListener {
+            mainActivityInterface.openVideoActivity(mVideo!![position].videoId)
+            mainActivityInterface.saveToRoom(RoomVideoTable(null,
+                    mVideo!![position].playListId,
+                    mVideo!![position].playListTitle,
+                    mVideo!![position].videoTitle,
+                    mVideo!![position].videoId,
+                    mVideo!![position].videoDescription,
+                    mVideo!![position].videoImgUrl,
+                    null))
+        }
 
     }
 

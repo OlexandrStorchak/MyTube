@@ -10,24 +10,40 @@ class PlayListViewModel(application: Application) : AndroidViewModel(application
     private val mRepository: Repository = Repository(application, MyRoomDB.getInstance(application)!!)
 
     private var mVideos: LiveData<List<RoomVideoTable>>
-    private var isLoad: Boolean
+
 
     init {
+        mVideos = mRepository.getVideoHttph(null)
+
+    }
+
+
+    fun getVideosFromNetwork(): LiveData<List<RoomVideoTable>> {
+
+        return mVideos
+    }
+
+    fun getVideosFromRoom(): LiveData<List<RoomVideoTable>> {
         mVideos = mRepository.getAllVideos()
-        isLoad = true
-
-    }
-
-
-    fun getVideos(): LiveData<List<RoomVideoTable>> {
         return mVideos
     }
 
-    fun showVideoByPlayList(playListId: String): LiveData<kotlin.collections.List<RoomVideoTable>> {
-        mRepository.getHttpVideos(playListId)
-        mVideos = mRepository.getVideosByPlayList(playListId)
+    fun showVideoByPlayListNetwork(playListId: String): LiveData<List<RoomVideoTable>> {
+        mVideos = mRepository.getVideoHttph(playListId)
         return mVideos
     }
 
+    fun showVideoByPlayListRoom(playListId: String): LiveData<List<RoomVideoTable>> {
+        mVideos = mRepository.getVideosByPlayListRoom(playListId)
+        return mVideos
+    }
+
+    fun addToRoom(roomVideoTable: RoomVideoTable) {
+        val videoId = roomVideoTable.videoId
+        if (mRepository.myRoom.roomPlayListsQuerys().checkVideoItem(videoId) != videoId) {
+            mRepository.myRoom.roomPlayListsQuerys().insert(roomVideoTable)
+        }
+    }
 
 }
+

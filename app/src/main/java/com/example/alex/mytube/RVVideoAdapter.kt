@@ -23,22 +23,26 @@ class RVVideoAdapter(private var mVideo: List<RoomVideoTable>?,
     }
 
     override fun onBindViewHolder(holder: MyVH, @SuppressLint("RecyclerView") position: Int) {
+        mVideo!!.apply {
+            holder.titleVideo.text = this[position].videoTitle
+            holder.descVideo.text = this[position].videoDescription
 
-        holder.titleVideo.text = mVideo!![position].videoTitle
-        holder.descVideo.text = mVideo!![position].videoDescription
+            Picasso.get().load(this[position].videoImgUrl)
+                    .into(holder.imageVideo)
 
-        Picasso.get().load(mVideo!![position].videoImgUrl).into(holder.imageVideo)
+            holder.recyclerItem.setOnClickListener {
+                mainActivityInterface.openVideoActivity(this[position].videoId)
 
-        holder.imageVideo.setOnClickListener {
-            mainActivityInterface.openVideoActivity(mVideo!![position].videoId)
-            mainActivityInterface.saveToRoom(RoomVideoTable(null,
-                    mVideo!![position].playListId,
-                    mVideo!![position].playListTitle,
-                    mVideo!![position].videoTitle,
-                    mVideo!![position].videoId,
-                    mVideo!![position].videoDescription,
-                    mVideo!![position].videoImgUrl,
-                    null))
+                mainActivityInterface.saveToRoom(RoomVideoTable(null,
+                        this[position].playListId,
+                        this[position].playListTitle,
+                        this[position].videoTitle,
+                        this[position].videoId,
+                        this[position].videoDescription,
+                        this[position].videoImgUrl,
+                        null))
+            }
+
         }
 
     }
@@ -52,6 +56,6 @@ class MyVH(view: View) : RecyclerView.ViewHolder(view) {
     val imageVideo = view.imageVideoItem!!
     val titleVideo = view.titleVideoItem!!
     val descVideo = view.decsVideoItem!!
-
+    val recyclerItem = view.recyclerItem!!
 
 }
